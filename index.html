@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f1ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gedanken-Check">
+<title>Gedanken-Check</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<style>
+:root{--bg:#f4f1ec;--card:#fffdf9;--text:#242321;--muted:#6d6a64;--line:#d8d3ca;--accent:#55655b;--soft:#ebe7df;--danger:#8a4f4b}
+@media(prefers-color-scheme:dark){:root{--bg:#171816;--card:#20221f;--text:#f3f1ec;--muted:#aaa79f;--line:#3b3e39;--accent:#9eafa3;--soft:#2a2d29;--danger:#d19089}}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.45}button,input,textarea{font:inherit}
+.app{width:min(100%,720px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom))}
+h1{margin:0;font-size:2rem;letter-spacing:-.03em}.sub{color:var(--muted);margin:3px 0 16px;font-size:.94rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.tab,.btn{min-height:46px;border:1px solid var(--line);border-radius:14px;padding:11px 14px;background:var(--card);color:var(--text);font-weight:650}.tab.active,.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+.section{border-top:1px solid var(--line);padding:18px 0}.section:first-child{border-top:0;padding-top:0}.step{font-size:1rem;margin:0 0 10px}
+label.title{display:block;font-weight:650;margin:12px 0 6px}textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:var(--card);color:var(--text);font-size:16px}textarea{min-height:94px;resize:vertical}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{display:flex;align-items:center;gap:9px;min-height:48px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--card);font-size:.95rem}.choice input{width:18px;height:18px;accent-color:var(--accent)}
+.timer,.reminder,.entry,.detail{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.timer{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.time{font-size:1.55rem;font-weight:800}.small{color:var(--muted);font-size:.84rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn.soft{background:var(--soft)}.btn.danger{color:var(--danger)}.btn.smallbtn{min-height:40px;padding:8px 11px;font-size:.9rem}.reminder{font-weight:700;line-height:1.5}
+.status{min-height:1.5em;color:var(--muted);font-size:.9rem;margin-top:8px}.hidden{display:none!important}.entry{margin-bottom:10px}.meta{color:var(--muted);font-size:.82rem}.entrytitle{font-weight:750;margin:3px 0}.preview{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty{border:1px dashed var(--line);border-radius:18px;padding:20px;text-align:center;color:var(--muted)}
+.detailblock{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.detailvalue{white-space:pre-wrap;overflow-wrap:anywhere}.detailvalue:empty:after{content:"—";color:var(--muted)}.file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.privacy{color:var(--muted);font-size:.82rem;margin-top:14px}
+@media(max-width:380px){.choices{grid-template-columns:1fr}.actions .btn{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<main class="app">
+<h1>Gedanken-Check</h1>
+<div class="sub">Nicht lösen. Wahrnehmen, Abstand schaffen, neu entscheiden.</div>
+<nav class="tabs"><button class="tab active" id="tabNew" type="button">Neuer Check</button><button class="tab" id="tabEntries" type="button">Meine Einträge</button></nav>
+
+<section id="newView">
+<form id="form">
+<div class="section"><h2 class="step">1. Gedanke</h2><label class="title" for="thought">Was geht mir gerade durch den Kopf?</label><textarea id="thought" name="thought" placeholder="Schreib den Gedanken einfach so auf, wie er gerade da ist."></textarea></div>
+
+<div class="section"><h2 class="step">2. Benennen</h2>
+<div class="choices">
+<label class="choice"><input type="radio" name="label" value="Angst">Angst</label>
+<label class="choice"><input type="radio" name="label" value="Verlustangst">Verlustangst</label>
+<label class="choice"><input type="radio" name="label" value="Unsicherheit">Unsicherheit</label>
+<label class="choice"><input type="radio" name="label" value="Kontaktimpuls">Kontaktimpuls</label>
+<label class="choice"><input type="radio" name="label" value="Grübeln">Grübeln</label>
+<label class="choice"><input type="radio" name="label" value="Kontrollbedürfnis">Kontrollbedürfnis</label>
+</div>
+<label class="title" for="otherLabel">Etwas anderes</label><input id="otherLabel" name="otherLabel" type="text" placeholder="z. B. Eifersucht, Druck, Sorge …">
+</div>
+
+<div class="section"><h2 class="step">3. Bemerken</h2>
+<label class="title" for="facts">Was weiß ich wirklich?</label><textarea id="facts" name="facts" placeholder="Nur das, was tatsächlich passiert oder sicher bekannt ist."></textarea>
+<label class="title" for="story">Was interpretiere oder befürchte ich gerade nur?</label><textarea id="story" name="story" placeholder="Welche Geschichte baut mein Kopf gerade daraus?"></textarea>
+</div>
+
+<div class="section"><h2 class="step">4. Abstand</h2>
+<label class="title">Gibt es gerade wirklich etwas, das ich tun muss?</label>
+<div class="choices">
+<label class="choice"><input type="radio" name="mustAct" value="Ja">Ja</label>
+<label class="choice"><input type="radio" name="mustAct" value="Nein">Nein</label>
+<label class="choice"><input type="radio" name="mustAct" value="Ich weiß es gerade nicht">Ich weiß es nicht</label>
+</div>
+<div class="timer"><div><div class="small">20 Minuten nichts entscheiden</div><div class="time" id="timerValue">20:00</div></div><div class="actions" style="margin-top:0"><button class="btn smallbtn" id="timerStart" type="button">Timer starten</button><button class="btn smallbtn" id="timerReset" type="button">Reset</button></div></div>
+<label class="title" for="during">Bis dahin mache ich:</label><input id="during" name="during" type="text" placeholder="z. B. duschen, essen machen, kurz rausgehen …">
+</div>
+
+<div class="section"><h2 class="step">5. Danach</h2>
+<label class="title" for="want">Was möchte ich jetzt?</label><textarea id="want" name="want"></textarea>
+<label class="title" for="whyAct">Handle ich, weil ich es wirklich möchte – oder nur, damit die Angst kurz weggeht?</label><textarea id="whyAct" name="whyAct"></textarea>
+</div>
+
+<div class="reminder">Ich muss den Gedanken nicht lösen.<br>Ich darf ihn haben, ohne sofort danach zu handeln.</div>
+<div class="actions"><button class="btn primary" type="submit">Eintrag speichern</button><button class="btn soft" id="clearForm" type="button">Leeren</button></div>
+<div class="status" id="status" aria-live="polite"></div>
+</form>
+</section>
+
+<section id="entriesView" class="hidden">
+<div id="entriesList"></div>
+<div class="actions"><button class="btn" id="exportBtn" type="button">Backup exportieren</button><button class="btn" id="importBtn" type="button">Backup importieren</button><input class="file" id="importFile" type="file" accept=".json,application/json"></div>
+<p class="privacy">Deine Einträge werden lokal auf diesem Gerät gespeichert. Für Gerätewechsel oder zusätzliche Sicherheit kannst du ein Backup exportieren.</p>
+</section>
+
+<section id="detailView" class="hidden">
+<div class="detail">
+<div class="meta" id="detailDate"></div><h2 id="detailTitle">Eintrag</h2>
+<div class="detailblock"><div class="small">Gedanke</div><div class="detailvalue" id="dThought"></div></div>
+<div class="detailblock"><div class="small">Was weiß ich wirklich?</div><div class="detailvalue" id="dFacts"></div></div>
+<div class="detailblock"><div class="small">Was interpretiere oder befürchte ich?</div><div class="detailvalue" id="dStory"></div></div>
+<div class="detailblock"><div class="small">Muss ich gerade handeln?</div><div class="detailvalue" id="dMust"></div></div>
+<div class="detailblock"><div class="small">Bis dahin mache ich</div><div class="detailvalue" id="dDuring"></div></div>
+<div class="detailblock"><div class="small">Was möchte ich jetzt?</div><div class="detailvalue" id="dWant"></div></div>
+<div class="detailblock"><div class="small">Warum möchte ich handeln?</div><div class="detailvalue" id="dWhy"></div></div>
+<div class="actions"><button class="btn" id="detailBack" type="button">Zurück</button><button class="btn danger" id="detailDelete" type="button">Eintrag löschen</button></div>
+</div>
+</section>
+</main>
+
+<script>
+(()=>{
+"use strict";
+const KEY="gedankenCheck.entries.v1",form=document.getElementById("form"),status=document.getElementById("status"),newView=document.getElementById("newView"),entriesView=document.getElementById("entriesView"),detailView=document.getElementById("detailView"),tabNew=document.getElementById("tabNew"),tabEntries=document.getElementById("tabEntries"),list=document.getElementById("entriesList"),importFile=document.getElementById("importFile");
+let current=null,seconds=1200,timer=null;
+const read=()=>{try{const x=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(x)?x:[]}catch{return[]}};
+const write=x=>localStorage.setItem(KEY,JSON.stringify(x));
+const radio=n=>{const e=form.querySelector(`input[name="${n}"]:checked`);return e?e.value:""};
+const uid=()=>crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const fmt=t=>new Intl.DateTimeFormat("de-DE",{dateStyle:"medium",timeStyle:"short"}).format(new Date(t));
+
+function show(which){
+ const isNew=which==="new";newView.classList.toggle("hidden",!isNew);entriesView.classList.toggle("hidden",isNew);detailView.classList.add("hidden");tabNew.classList.toggle("active",isNew);tabEntries.classList.toggle("active",!isNew);if(!isNew)render();
+}
+function render(){
+ const entries=read().sort((a,b)=>b.createdAt-a.createdAt);list.replaceChildren();
+ if(!entries.length){const d=document.createElement("div");d.className="empty";d.textContent="Noch keine Einträge gespeichert.";list.appendChild(d);return}
+ entries.forEach(e=>{const a=document.createElement("article");a.className="entry";const m=document.createElement("div");m.className="meta";m.textContent=fmt(e.createdAt);const t=document.createElement("div");t.className="entrytitle";t.textContent=e.label||e.otherLabel||"Gedanken-Check";const p=document.createElement("div");p.className="preview";p.textContent=e.thought||"Kein Gedanke eingetragen";const acts=document.createElement("div");acts.className="actions";const b=document.createElement("button");b.className="btn smallbtn";b.type="button";b.textContent="Öffnen";b.addEventListener("click",()=>openDetail(e.id));acts.append(b);a.append(m,t,p,acts);list.append(a)});
+}
+function openDetail(id){
+ const e=read().find(x=>x.id===id);if(!e)return;current=id;entriesView.classList.add("hidden");detailView.classList.remove("hidden");
+ document.getElementById("detailDate").textContent=fmt(e.createdAt);document.getElementById("detailTitle").textContent=e.label||e.otherLabel||"Gedanken-Check";
+ [["dThought","thought"],["dFacts","facts"],["dStory","story"],["dMust","mustAct"],["dDuring","during"],["dWant","want"],["dWhy","whyAct"]].forEach(([id,k])=>document.getElementById(id).textContent=e[k]||"");
+}
+function updateTimer(){document.getElementById("timerValue").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`}
+function resetTimer(){if(timer)clearInterval(timer);timer=null;seconds=1200;updateTimer();document.getElementById("timerStart").textContent="Timer starten"}
+function toggleTimer(){const b=document.getElementById("timerStart");if(timer){clearInterval(timer);timer=null;b.textContent="Weiter";return}if(seconds<=0)seconds=1200;b.textContent="Pause";timer=setInterval(()=>{seconds=Math.max(0,seconds-1);updateTimer();if(seconds===0){clearInterval(timer);timer=null;b.textContent="Neu starten"}},1000)}
+
+form.addEventListener("submit",e=>{e.preventDefault();const thought=form.thought.value.trim();if(!thought){status.textContent="Trag zuerst deinen Gedanken ein.";form.thought.focus();return}const x={id:uid(),createdAt:Date.now(),thought,label:radio("label"),otherLabel:form.otherLabel.value.trim(),facts:form.facts.value.trim(),story:form.story.value.trim(),mustAct:radio("mustAct"),during:form.during.value.trim(),want:form.want.value.trim(),whyAct:form.whyAct.value.trim()};const entries=read();entries.push(x);write(entries);status.textContent="Eintrag gespeichert."});
+document.getElementById("clearForm").addEventListener("click",()=>{form.reset();status.textContent="";resetTimer();form.thought.focus()});
+document.getElementById("timerStart").addEventListener("click",toggleTimer);document.getElementById("timerReset").addEventListener("click",resetTimer);
+tabNew.addEventListener("click",()=>show("new"));tabEntries.addEventListener("click",()=>show("entries"));
+document.getElementById("detailBack").addEventListener("click",()=>{current=null;detailView.classList.add("hidden");entriesView.classList.remove("hidden")});
+document.getElementById("detailDelete").addEventListener("click",()=>{if(!current)return;write(read().filter(x=>x.id!==current));current=null;detailView.classList.add("hidden");entriesView.classList.remove("hidden");render()});
+document.getElementById("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify({app:"Gedanken-Check",version:1,exportedAt:new Date().toISOString(),entries:read()},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`gedanken-check-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500)});
+document.getElementById("importBtn").addEventListener("click",()=>importFile.click());
+importFile.addEventListener("change",async()=>{const f=importFile.files&&importFile.files[0];if(!f)return;try{const p=JSON.parse(await f.text()),incoming=Array.isArray(p)?p:p.entries;if(!Array.isArray(incoming))throw 0;const map=new Map(read().map(e=>[e.id,e]));incoming.forEach(e=>{if(e&&e.id&&Number.isFinite(e.createdAt))map.set(e.id,e)});write([...map.values()]);render();alert("Backup wurde importiert.")}catch{alert("Die Datei ist kein gültiges Gedanken-Check-Backup.")}finally{importFile.value=""}});
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+updateTimer();
+})();
+</script>
+</body></html>
